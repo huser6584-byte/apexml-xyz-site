@@ -3,35 +3,772 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Apex XML – AI Security Research</title>
+  <meta name="description" content="Apex Solutions — AI-powered LLM inference platform and security research tooling for enterprise red teams.">
+  <meta name="keywords" content="AI security, LLM inference, red team, security research, GhostMaster, DeepSeek, enterprise AI">
+  <meta property="og:title" content="Apex Solutions — AI Security Research Platform">
+  <meta property="og:description" content="AI-powered LLM inference platform for security research and enterprise red teams.">
+  <meta property="og:url" content="https://apexml.xyz">
+  <meta property="og:type" content="website">
+  <title>Apex Solutions — AI Security Research Platform</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 800px; margin: 60px auto; padding: 0 20px; color: #333; }
-    h1 { color: #1a1a2e; }
-    .tagline { font-size: 1.2em; color: #555; margin-bottom: 30px; }
-    .section { margin-bottom: 24px; }
-    a { color: #0066cc; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #090d1a;
+      --bg2:     #0d1221;
+      --bg3:     #111828;
+      --bg4:     #161e2e;
+      --accent:  #4f8ef7;
+      --accent2: #7c5cfc;
+      --green:   #34d399;
+      --text:    #e2e8f0;
+      --muted:   #8b9bbf;
+      --border:  rgba(79,142,247,0.13);
+      --card:    rgba(255,255,255,0.035);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 6%;
+      height: 64px;
+      background: rgba(9,13,26,0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-size: 1.05rem; font-weight: 800; letter-spacing: 0.02em;
+      color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px;
+    }
+    .nav-logo .logo-mark {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 900; color: #fff; letter-spacing: 0;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 0.875rem; font-weight: 500;
+      transition: color 0.2s; padding: 4px 0;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; border: none; padding: 8px 20px; border-radius: 7px;
+      font-size: 0.84rem; font-weight: 600; cursor: pointer;
+      text-decoration: none; transition: opacity 0.2s, transform 0.2s;
+      white-space: nowrap;
+    }
+    .nav-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 64px 6% 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero-glow {
+      position: absolute; top: -120px; right: -80px; z-index: 0;
+      width: 800px; height: 800px; border-radius: 50%;
+      background: radial-gradient(circle at center,
+        rgba(79,142,247,0.07) 0%,
+        rgba(124,92,252,0.04) 40%,
+        transparent 70%);
+      pointer-events: none;
+    }
+    .hero-glow2 {
+      position: absolute; bottom: -200px; left: -100px; z-index: 0;
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle at center,
+        rgba(124,92,252,0.05) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .hero-inner { position: relative; z-index: 1; max-width: 700px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(79,142,247,0.08);
+      border: 1px solid rgba(79,142,247,0.28);
+      color: var(--accent); padding: 6px 14px; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.07em;
+      margin-bottom: 32px; text-transform: uppercase;
+    }
+    .badge-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; } 50% { opacity: 0.25; }
+    }
+    h1 {
+      font-size: clamp(2.4rem, 5.5vw, 3.8rem);
+      font-weight: 850; line-height: 1.1;
+      letter-spacing: -0.03em; margin-bottom: 28px;
+    }
+    .grad {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 1.1rem; color: var(--muted); line-height: 1.75;
+      margin-bottom: 44px; max-width: 580px;
+    }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; padding: 13px 28px; border-radius: 9px;
+      font-weight: 700; text-decoration: none; font-size: 0.95rem;
+      box-shadow: 0 4px 24px rgba(79,142,247,0.28);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(79,142,247,0.38); }
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent;
+      border: 1px solid rgba(79,142,247,0.3);
+      color: var(--text); padding: 12px 26px; border-radius: 9px;
+      font-weight: 500; text-decoration: none; font-size: 0.95rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-outline:hover { border-color: var(--accent); background: rgba(79,142,247,0.06); }
+    .hero-social-proof {
+      margin-top: 52px; padding-top: 36px;
+      border-top: 1px solid var(--border);
+      display: flex; gap: 36px; flex-wrap: wrap;
+    }
+    .proof-item { display: flex; flex-direction: column; gap: 3px; }
+    .proof-num { font-size: 1.5rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+    .proof-label { font-size: 0.78rem; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* ─── TRUSTED BY / STACK BAR ─── */
+    .stack-bar {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 6%;
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      overflow: hidden;
+    }
+    .stack-label { font-size: 0.72rem; font-weight: 700; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-right: 8px; white-space: nowrap; }
+    .stack-pill {
+      background: var(--bg3); border: 1px solid var(--border);
+      color: var(--muted); padding: 5px 13px; border-radius: 5px;
+      font-size: 0.78rem; font-weight: 600; white-space: nowrap;
+    }
+
+    /* ─── SECTION SHARED ─── */
+    section { padding: 96px 6%; }
+    .section-eyebrow {
+      font-size: 0.72rem; font-weight: 800; letter-spacing: 0.13em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 12px;
+    }
+    h2 {
+      font-size: clamp(1.8rem, 3.8vw, 2.8rem); font-weight: 850;
+      line-height: 1.15; letter-spacing: -0.025em; margin-bottom: 18px;
+    }
+    .section-sub {
+      font-size: 1.05rem; color: var(--muted); max-width: 560px;
+      margin-bottom: 60px; line-height: 1.75;
+    }
+
+    /* ─── PRODUCTS ─── */
+    #products { background: var(--bg); }
+    .products-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 24px;
+    }
+    .product-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 36px 32px;
+      position: relative; overflow: hidden;
+      transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+    }
+    .product-card::after {
+      content: ''; position: absolute; inset: 0; border-radius: 16px;
+      background: linear-gradient(135deg, rgba(79,142,247,0.04), rgba(124,92,252,0.04));
+      opacity: 0; transition: opacity 0.25s; pointer-events: none;
+    }
+    .product-card:hover {
+      border-color: rgba(79,142,247,0.35);
+      transform: translateY(-5px);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.35);
+    }
+    .product-card:hover::after { opacity: 1; }
+    .product-card.featured {
+      border-color: rgba(79,142,247,0.25);
+    }
+    .product-card.featured::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .product-icon {
+      width: 52px; height: 52px; border-radius: 13px;
+      background: rgba(79,142,247,0.1);
+      border: 1px solid rgba(79,142,247,0.18);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 22px;
+    }
+    .product-card h3 { font-size: 1.25rem; font-weight: 750; margin-bottom: 8px; letter-spacing: -0.01em; }
+    .product-status {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
+      color: var(--green); margin-bottom: 14px;
+    }
+    .product-status::before {
+      content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--green);
+    }
+    .product-card p { color: var(--muted); font-size: 0.93rem; line-height: 1.7; margin-bottom: 24px; }
+    .tag-row { display: flex; gap: 7px; flex-wrap: wrap; }
+    .tag {
+      font-size: 0.72rem; padding: 4px 10px; border-radius: 5px;
+      background: rgba(79,142,247,0.09); color: var(--accent);
+      font-weight: 700; letter-spacing: 0.04em; border: 1px solid rgba(79,142,247,0.15);
+    }
+
+    /* ─── HOW IT WORKS ─── */
+    #platform { background: var(--bg2); }
+    .steps-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2px; background: var(--border); border-radius: 16px; overflow: hidden;
+    }
+    .step {
+      background: var(--bg2); padding: 36px 28px;
+      position: relative;
+    }
+    .step-num {
+      font-size: 0.7rem; font-weight: 800; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 16px;
+    }
+    .step-icon { font-size: 1.8rem; margin-bottom: 14px; }
+    .step h4 { font-size: 0.98rem; font-weight: 750; margin-bottom: 10px; letter-spacing: -0.01em; }
+    .step p { font-size: 0.875rem; color: var(--muted); line-height: 1.65; }
+
+    /* ─── USE CASES ─── */
+    #usecases { background: var(--bg); }
+    .usecase-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    .usecase-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 28px 24px;
+      transition: border-color 0.2s;
+    }
+    .usecase-card:hover { border-color: rgba(79,142,247,0.3); }
+    .uc-icon { font-size: 1.4rem; margin-bottom: 14px; }
+    .usecase-card h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; }
+    .usecase-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
+
+    /* ─── ABOUT ─── */
+    #about { background: var(--bg2); }
+    .about-layout { display: grid; grid-template-columns: 1fr 420px; gap: 72px; align-items: start; }
+    .about-text h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 14px; margin-top: 28px; }
+    .about-text h3:first-child { margin-top: 0; }
+    .about-text p { color: var(--muted); font-size: 0.96rem; line-height: 1.75; margin-bottom: 14px; }
+    .about-text strong { color: var(--text); font-weight: 600; }
+    .tech-grid { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 28px; }
+    .tech-pill {
+      background: var(--bg3); border: 1px solid var(--border);
+      padding: 6px 13px; border-radius: 7px;
+      font-size: 0.8rem; color: var(--muted); font-weight: 500;
+    }
+    /* Founder card */
+    .founder-card {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 16px; padding: 36px; position: sticky; top: 84px;
+    }
+    .founder-avatar {
+      width: 68px; height: 68px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem; font-weight: 900; color: #fff;
+      margin-bottom: 20px;
+    }
+    .founder-name { font-size: 1.15rem; font-weight: 750; margin-bottom: 4px; }
+    .founder-role { font-size: 0.82rem; font-weight: 700; color: var(--accent); letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 16px; }
+    .founder-bio { font-size: 0.9rem; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
+    .founder-meta { display: flex; flex-direction: column; gap: 10px; }
+    .meta-row {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.84rem; color: var(--muted);
+    }
+    .meta-icon { font-size: 1rem; width: 20px; text-align: center; }
+    .company-stats {
+      margin-top: 28px; padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    }
+    .cs-item { display: flex; flex-direction: column; gap: 3px; }
+    .cs-val { font-size: 1.1rem; font-weight: 800; color: var(--text); }
+    .cs-key { font-size: 0.72rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* ─── CONTACT ─── */
+    #contact { background: var(--bg); }
+    .contact-wrap { max-width: 640px; }
+    .contact-card {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 16px; padding: 40px;
+      display: flex; flex-direction: column; gap: 16px;
+      margin-top: 12px;
+    }
+    .contact-row {
+      display: flex; align-items: center; gap: 16px;
+      padding: 16px 20px; background: var(--bg2);
+      border-radius: 10px; border: 1px solid var(--border);
+      text-decoration: none; color: var(--text);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .contact-row:hover { border-color: rgba(79,142,247,0.35); background: rgba(79,142,247,0.04); }
+    .contact-icon-wrap {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.18);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; flex-shrink: 0;
+    }
+    .contact-info { display: flex; flex-direction: column; gap: 2px; }
+    .contact-key { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+    .contact-val { font-size: 0.95rem; font-weight: 500; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 32px 6%;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    }
+    .footer-logo { display: flex; align-items: center; gap: 9px; }
+    .footer-logo .logo-mark {
+      width: 24px; height: 24px; border-radius: 6px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.65rem; font-weight: 900; color: #fff;
+    }
+    .footer-logo-text { font-size: 0.9rem; font-weight: 700; }
+    .footer-logo-text span { color: var(--accent); }
+    footer .copy { font-size: 0.8rem; color: var(--muted); }
+    footer .footer-email { font-size: 0.82rem; color: var(--muted); }
+    footer .footer-email a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    footer .footer-email a:hover { color: var(--accent); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      .about-layout { grid-template-columns: 1fr; gap: 40px; }
+      .founder-card { position: static; }
+    }
+    @media (max-width: 680px) {
+      nav { padding: 0 5%; }
+      .nav-links { display: none; }
+      section { padding: 72px 5%; }
+      .hero { padding: 64px 5% 64px; }
+      .stack-bar { gap: 8px; }
+      .hero-social-proof { gap: 24px; }
+      footer { flex-direction: column; align-items: flex-start; }
+    }
   </style>
 </head>
 <body>
-  <h1>Apex Solutions</h1>
-  <p class="tagline">AI-powered security research tooling for enterprise red-team engagements.</p>
 
-  <div class="section">
-    <h2>What We Do</h2>
-    <p>We build open-source LLM inference tooling and AI copilots for security researchers and enterprise red teams. Our products enable automated vulnerability analysis, penetration testing assistance, and security audit automation.</p>
-  </div>
-
-  <div class="section">
-    <h2>Products</h2>
-    <ul>
-      <li><strong>GhostMaster</strong> – AI security copilot for red-team audit workflows</li>
-      <li><strong>DeepSeek Agent</strong> – Local LLM terminal agent with 19 security-focused tools</li>
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <div class="logo-mark">A</div>
+      Apex<span>Solutions</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#products">Products</a></li>
+      <li><a href="#platform">Platform</a></li>
+      <li><a href="#usecases">Use Cases</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
     </ul>
+    <a href="mailto:admin@apexml.xyz" class="nav-cta">Get in Touch</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-glow2"></div>
+    <div class="hero-inner">
+      <div class="badge">
+        <span class="badge-dot"></span>
+        AI Security Research Tooling
+      </div>
+      <h1>Enterprise LLM Infrastructure<br>for <span class="grad">Security Teams</span></h1>
+      <p>
+        Apex Solutions builds open-source LLM inference tooling and AI copilots that power
+        security researchers and enterprise red teams — enabling automated vulnerability analysis,
+        penetration testing assistance, and security audit automation at scale.
+      </p>
+      <div class="hero-actions">
+        <a href="#products" class="btn-primary">Explore Products →</a>
+        <a href="#contact" class="btn-outline">Contact Us</a>
+      </div>
+      <div class="hero-social-proof">
+        <div class="proof-item">
+          <span class="proof-num">2</span>
+          <span class="proof-label">Live Products</span>
+        </div>
+        <div class="proof-item">
+          <span class="proof-num">19+</span>
+          <span class="proof-label">Security Tools</span>
+        </div>
+        <div class="proof-item">
+          <span class="proof-num">164B</span>
+          <span class="proof-label">Param Support</span>
+        </div>
+        <div class="proof-item">
+          <span class="proof-num">75–99%</span>
+          <span class="proof-label">AWS Workloads</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK BAR -->
+  <div class="stack-bar">
+    <span class="stack-label">Built on</span>
+    <span class="stack-pill">Python</span>
+    <span class="stack-pill">llama.cpp / ds4</span>
+    <span class="stack-pill">SkyPilot</span>
+    <span class="stack-pill">AWS &amp; GCP</span>
+    <span class="stack-pill">GGUF / CUDA</span>
+    <span class="stack-pill">OpenAI-compatible API</span>
+    <span class="stack-pill">A100-80GB / H100</span>
+    <span class="stack-pill">DeepSeek V4 Flash</span>
+    <span class="stack-pill">Qwen3 35B</span>
   </div>
 
-  <div class="section">
-    <h2>Contact</h2>
-    <p>Email: <a href="mailto:admin@apexml.xyz">admin@apexml.xyz</a></p>
-  </div>
+  <!-- PRODUCTS -->
+  <section id="products">
+    <div class="section-eyebrow">Products</div>
+    <h2>AI Tooling Built for Security</h2>
+    <p class="section-sub">
+      Our products combine state-of-the-art open-source LLMs with purpose-built tooling
+      designed around the security research workflow.
+    </p>
+    <div class="products-grid">
+
+      <div class="product-card featured">
+        <div class="product-icon">👻</div>
+        <h3>GhostMaster</h3>
+        <div class="product-status">Live · Iterating</div>
+        <p>
+          An AI security copilot engineered for enterprise red-team audit workflows.
+          GhostMaster automates vulnerability analysis, generates structured audit reports,
+          and assists with penetration testing engagements using a fine-tuned
+          <strong style="color:var(--text)">Qwen3-35B-A3B</strong> security-specialized model.
+          Designed for Playtika-scale engagements with 55 seed scenarios and 30 canary tests.
+        </p>
+        <div class="tag-row">
+          <span class="tag">Red Team</span>
+          <span class="tag">Audit Automation</span>
+          <span class="tag">Qwen3 35B</span>
+          <span class="tag">LLM Copilot</span>
+          <span class="tag">DPO Fine-Tuned</span>
+        </div>
+      </div>
+
+      <div class="product-card featured">
+        <div class="product-icon">⚡</div>
+        <h3>DeepSeek Agent</h3>
+        <div class="product-status">Live · Iterating</div>
+        <p>
+          A local LLM terminal agent powered by <strong style="color:var(--text)">DeepSeek V4 Flash</strong>
+          with 19 security-focused tools. Runs entirely on local GPU infrastructure via an
+          OpenAI-compatible API, enabling air-gapped security research with no data leaving
+          the environment. 97 fixes across 8 production passes.
+        </p>
+        <div class="tag-row">
+          <span class="tag">Local Inference</span>
+          <span class="tag">Terminal Agent</span>
+          <span class="tag">DeepSeek V4 Flash</span>
+          <span class="tag">19 Tools</span>
+          <span class="tag">Air-Gapped</span>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <div class="product-icon">☁️</div>
+        <h3>Cloud Inference Platform</h3>
+        <div class="product-status">Live · Expanding</div>
+        <p>
+          Managed GPU orchestration for running large GGUF models (up to 164GB) across AWS,
+          GCP, and Azure. Uses <strong style="color:var(--text)">SkyPilot</strong> for
+          multi-cloud scheduling with preemptible instance optimization — targeting
+          <strong style="color:var(--text)">A100-80GB</strong> and
+          <strong style="color:var(--text)">H100</strong> at $1.52–$2.81/hr spot pricing.
+        </p>
+        <div class="tag-row">
+          <span class="tag">Multi-Cloud</span>
+          <span class="tag">SkyPilot</span>
+          <span class="tag">Spot Optimized</span>
+          <span class="tag">A100 / H100</span>
+          <span class="tag">OpenAI API</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="platform">
+    <div class="section-eyebrow">Platform</div>
+    <h2>From Model to Security Insight</h2>
+    <p class="section-sub">
+      A vertically integrated stack — from GPU infrastructure to domain-specific security tooling.
+    </p>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">Step 01</div>
+        <div class="step-icon">🖥️</div>
+        <h4>Model Deployment</h4>
+        <p>
+          Quantized GGUF models deployed on GPU instances via SkyPilot.
+          Runtime VRAM detection sets optimal layer offloading per hardware class
+          (A100-80GB → 40 GPU layers, fallback → 20).
+        </p>
+      </div>
+      <div class="step">
+        <div class="step-num">Step 02</div>
+        <div class="step-icon">🔌</div>
+        <h4>OpenAI-Compatible API</h4>
+        <p>
+          ds4-server exposes a standard REST endpoint on port 8000.
+          Drop-in replacement for any client using the chat completions API.
+          LiteLLM proxy handles multi-model routing.
+        </p>
+      </div>
+      <div class="step">
+        <div class="step-num">Step 03</div>
+        <div class="step-icon">🛠️</div>
+        <h4>Security Tool Integration</h4>
+        <p>
+          19 security tools wired to the agent runtime — recon, exploit analysis,
+          CVE lookup, payload generation, binary analysis, and structured report generation.
+        </p>
+      </div>
+      <div class="step">
+        <div class="step-num">Step 04</div>
+        <div class="step-icon">📋</div>
+        <h4>Structured Audit Output</h4>
+        <p>
+          CVSS-scored findings, remediation guidance, and audit reports delivered
+          via terminal, web browser, mobile app, desktop app, or API.
+          Fully reproducible — no cloud dependency.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- USE CASES -->
+  <section id="usecases">
+    <div class="section-eyebrow">Use Cases</div>
+    <h2>Built for Enterprise Security Workflows</h2>
+    <p class="section-sub">
+      Our customers are security researchers and enterprise teams that need
+      LLM-powered assistance without compromising sensitive client data.
+    </p>
+    <div class="usecase-grid">
+      <div class="usecase-card">
+        <div class="uc-icon">🎯</div>
+        <h4>Red Team Engagements</h4>
+        <p>AI-assisted attack path analysis, payload generation, and lateral movement planning for enterprise red team operations.</p>
+      </div>
+      <div class="usecase-card">
+        <div class="uc-icon">🔍</div>
+        <h4>Vulnerability Analysis</h4>
+        <p>Automated triage and CVSS scoring of vulnerability findings. Correlates CVE databases with target system context.</p>
+      </div>
+      <div class="usecase-card">
+        <div class="uc-icon">📄</div>
+        <h4>Audit Report Generation</h4>
+        <p>Structured, client-ready security audit reports generated from raw findings with remediation recommendations.</p>
+      </div>
+      <div class="usecase-card">
+        <div class="uc-icon">🔒</div>
+        <h4>Air-Gapped Research</h4>
+        <p>Run frontier-class LLMs on local GPU hardware. No data leaves the environment — suitable for classified or regulated engagements.</p>
+      </div>
+      <div class="usecase-card">
+        <div class="uc-icon">🤖</div>
+        <h4>Security Automation</h4>
+        <p>Automate repetitive pentesting tasks — reconnaissance, enumeration, and initial analysis — with AI-driven terminal agents.</p>
+      </div>
+      <div class="usecase-card">
+        <div class="uc-icon">☁️</div>
+        <h4>Cloud-Scale Inference</h4>
+        <p>Deploy large models on AWS/GCP spot instances for high-throughput batch analysis at a fraction of on-demand pricing.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-eyebrow">About</div>
+    <h2>Who We Are</h2>
+    <div class="about-layout">
+      <div class="about-text">
+        <h3>The Problem We Solve</h3>
+        <p>
+          Most AI security tools rely on <strong>closed, cloud-hosted LLMs</strong> that cannot
+          process sensitive client data. Security researchers working on enterprise engagements
+          need the intelligence of frontier models — but without the data sovereignty risk that
+          comes from sending client environments to a third-party API.
+        </p>
+
+        <h3>Our Approach</h3>
+        <p>
+          Apex Solutions was founded in <strong>January 2026</strong> to close that gap.
+          We build on open-source models — <strong>DeepSeek V4 Flash</strong> and
+          <strong>Qwen3-35B-A3B</strong> — deployed on customer-controlled GPU infrastructure.
+          Security teams get frontier-class intelligence without the compliance risk.
+        </p>
+        <p>
+          Our cloud inference platform uses <strong>SkyPilot</strong> to orchestrate GPU
+          workloads across AWS, GCP, and Azure — automatically selecting preemptible instances
+          to minimize cost. The same GGUF models run identically on local RTX hardware or
+          a cloud A100-80GB, making development and production environments truly portable.
+        </p>
+
+        <h3>Where We Are Now</h3>
+        <p>
+          We are <strong>bootstrapped</strong>, generating revenue from security research
+          engagements, and iterating toward a broader platform. Our products are in active
+          use for enterprise red-team work, with <strong>75–99% of our infrastructure spend
+          on AWS</strong>. We are a <strong>1–10 person team</strong> based in Kolkata,
+          West Bengal, India, operating since January 2026.
+        </p>
+
+        <div class="tech-grid">
+          <span class="tech-pill">Python</span>
+          <span class="tech-pill">llama.cpp / ds4</span>
+          <span class="tech-pill">SkyPilot</span>
+          <span class="tech-pill">AWS EC2 / P5</span>
+          <span class="tech-pill">GCP A100</span>
+          <span class="tech-pill">GGUF / CUDA</span>
+          <span class="tech-pill">OpenAI API</span>
+          <span class="tech-pill">LiteLLM</span>
+          <span class="tech-pill">HuggingFace Hub</span>
+          <span class="tech-pill">DeepSeek V4 Flash</span>
+          <span class="tech-pill">Qwen3-35B</span>
+        </div>
+      </div>
+
+      <div>
+        <div class="founder-card">
+          <div class="founder-avatar">S</div>
+          <div class="founder-name">Soumabha Majumdar</div>
+          <div class="founder-role">Founder &amp; CEO</div>
+          <p class="founder-bio">
+            Security engineer and AI researcher building open-source LLM infrastructure
+            for enterprise security teams. Founded Apex Solutions in January 2026 to bring
+            frontier AI capabilities to security research workflows without compromising
+            data sovereignty.
+          </p>
+          <div class="founder-meta">
+            <div class="meta-row">
+              <span class="meta-icon">📍</span>
+              <span>Kolkata, West Bengal, India</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-icon">✉️</span>
+              <span>admin@apexml.xyz</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-icon">🏷️</span>
+              <span>CEO · Entrepreneur / Co-Founder</span>
+            </div>
+          </div>
+          <div class="company-stats">
+            <div class="cs-item">
+              <span class="cs-val">Jan 2026</span>
+              <span class="cs-key">Founded</span>
+            </div>
+            <div class="cs-item">
+              <span class="cs-val">Bootstrapped</span>
+              <span class="cs-key">Funding Stage</span>
+            </div>
+            <div class="cs-item">
+              <span class="cs-val">1–10</span>
+              <span class="cs-key">Team Size</span>
+            </div>
+            <div class="cs-item">
+              <span class="cs-val">AI / SaaS</span>
+              <span class="cs-key">Industry</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-wrap">
+      <div class="section-eyebrow">Contact</div>
+      <h2>Get in Touch</h2>
+      <p class="section-sub" style="margin-bottom: 0;">
+        Interested in our products, a security research engagement, or partnership?
+        Reach out directly — we respond within 24 hours.
+      </p>
+      <div class="contact-card">
+        <a href="mailto:admin@apexml.xyz" class="contact-row">
+          <div class="contact-icon-wrap">✉️</div>
+          <div class="contact-info">
+            <span class="contact-key">Email</span>
+            <span class="contact-val">admin@apexml.xyz</span>
+          </div>
+        </a>
+        <a href="https://apexml.xyz" class="contact-row">
+          <div class="contact-icon-wrap">🌐</div>
+          <div class="contact-info">
+            <span class="contact-key">Website</span>
+            <span class="contact-val">https://apexml.xyz</span>
+          </div>
+        </a>
+        <div class="contact-row" style="cursor:default;">
+          <div class="contact-icon-wrap">📍</div>
+          <div class="contact-info">
+            <span class="contact-key">Location</span>
+            <span class="contact-val">Kolkata, West Bengal 700030 · India</span>
+          </div>
+        </div>
+        <div class="contact-row" style="cursor:default;">
+          <div class="contact-icon-wrap">🏢</div>
+          <div class="contact-info">
+            <span class="contact-key">Company</span>
+            <span class="contact-val">Apex Solutions — AI Security Research Platform</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">
+      <div class="logo-mark">A</div>
+      <span class="footer-logo-text">Apex<span>Solutions</span></span>
+    </div>
+    <p class="copy">© 2026 Apex Solutions. AI-powered security research tooling.</p>
+    <p class="footer-email"><a href="mailto:admin@apexml.xyz">admin@apexml.xyz</a></p>
+  </footer>
+
 </body>
 </html>
