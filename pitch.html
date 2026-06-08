@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Apex Solutions — Pitch Deck</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #090d1a; --bg2: #0d1221; --bg3: #111828;
+      --accent: #4f8ef7; --accent2: #7c5cfc; --green: #34d399;
+      --text: #e2e8f0; --muted: #8b9bbf; --border: rgba(79,142,247,0.13);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 6%; height: 56px;
+      background: rgba(9,13,26,0.92); backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo { font-size: 0.95rem; font-weight: 800; color: var(--text); text-decoration: none; }
+    .nav-logo span { color: var(--accent); }
+    .slide-nav { display: flex; gap: 6px; }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--border); border: 1px solid rgba(79,142,247,0.3);
+      cursor: pointer; transition: background 0.2s;
+    }
+    .dot.active { background: var(--accent); }
+
+    /* SLIDES */
+    .slide {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 80px 8% 60px; position: relative; overflow: hidden;
+    }
+    .slide:nth-child(even) { background: var(--bg2); }
+
+    /* decorative glow */
+    .glow {
+      position: absolute; border-radius: 50%; pointer-events: none;
+      background: radial-gradient(circle, rgba(79,142,247,0.07), transparent 65%);
+    }
+    .glow-tl { width: 700px; height: 700px; top: -200px; left: -150px; }
+    .glow-br { width: 600px; height: 600px; bottom: -200px; right: -100px;
+      background: radial-gradient(circle, rgba(124,92,252,0.06), transparent 65%); }
+
+    .slide-inner { position: relative; z-index: 1; max-width: 960px; width: 100%; }
+
+    /* slide label */
+    .slide-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 0.7rem; font-weight: 800; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 20px;
+    }
+    .slide-label::before {
+      content: ''; width: 20px; height: 1px; background: var(--accent);
+    }
+
+    h1 {
+      font-size: clamp(2.6rem, 6vw, 4rem); font-weight: 900;
+      line-height: 1.08; letter-spacing: -0.03em; margin-bottom: 24px;
+    }
+    h2 {
+      font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 850;
+      line-height: 1.15; letter-spacing: -0.025em; margin-bottom: 20px;
+    }
+    .grad {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .lead { font-size: 1.15rem; color: var(--muted); line-height: 1.75; max-width: 640px; margin-bottom: 40px; }
+
+    /* SLIDE 1 — Cover */
+    .cover-badges { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 48px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: rgba(79,142,247,0.08); border: 1px solid rgba(79,142,247,0.25);
+      color: var(--accent); padding: 6px 14px; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .badge.green { background: rgba(52,211,153,0.08); border-color: rgba(52,211,153,0.25); color: var(--green); }
+    .badge-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+    .cover-stats {
+      display: flex; gap: 0; border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+      max-width: 580px;
+    }
+    .cstat {
+      flex: 1; padding: 20px 24px; border-right: 1px solid var(--border);
+      background: rgba(255,255,255,0.025);
+    }
+    .cstat:last-child { border-right: none; }
+    .cstat-num { font-size: 1.6rem; font-weight: 900; letter-spacing: -0.02em; color: var(--text); }
+    .cstat-label { font-size: 0.72rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; margin-top: 3px; }
+
+    /* SLIDE 2 — Products */
+    .products { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 8px; }
+    .pcard {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: 16px; padding: 32px 28px;
+      position: relative; overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .pcard::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    }
+    .pcard-icon { font-size: 1.8rem; margin-bottom: 16px; }
+    .pcard h3 { font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
+    .pcard-status {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.7rem; font-weight: 700; color: var(--green);
+      text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 14px;
+    }
+    .pcard-status::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+    .pcard p { font-size: 0.9rem; color: var(--muted); line-height: 1.7; margin-bottom: 18px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag {
+      font-size: 0.7rem; padding: 3px 9px; border-radius: 4px;
+      background: rgba(79,142,247,0.09); color: var(--accent);
+      font-weight: 700; border: 1px solid rgba(79,142,247,0.15);
+    }
+
+    /* SLIDE 3 — Why Nebius */
+    .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 40px; }
+    .why-card {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px;
+    }
+    .why-icon { font-size: 1.4rem; margin-bottom: 12px; }
+    .why-card h4 { font-size: 0.95rem; font-weight: 750; margin-bottom: 8px; }
+    .why-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
+
+    .ask-box {
+      background: linear-gradient(135deg, rgba(79,142,247,0.08), rgba(124,92,252,0.08));
+      border: 1px solid rgba(79,142,247,0.25); border-radius: 14px;
+      padding: 32px 36px; display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 20px;
+    }
+    .ask-box h3 { font-size: 1.3rem; font-weight: 800; margin-bottom: 6px; }
+    .ask-box p { font-size: 0.9rem; color: var(--muted); }
+    .ask-amount {
+      font-size: 2.2rem; font-weight: 900; letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; white-space: nowrap;
+    }
+    .ask-sub { font-size: 0.78rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; }
+
+    /* SLIDE 4 — Market & Traction */
+    .traction-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
+    .tstat {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px 20px; text-align: center;
+    }
+    .tstat-num { font-size: 1.8rem; font-weight: 900; letter-spacing: -0.02em; margin-bottom: 6px; }
+    .tstat-label { font-size: 0.75rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; }
+    .market-bar {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: 12px; padding: 28px 32px;
+    }
+    .market-bar h4 { font-size: 0.85rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 20px; }
+    .mrow { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
+    .mrow:last-child { margin-bottom: 0; }
+    .mrow-label { font-size: 0.82rem; font-weight: 700; width: 50px; color: var(--muted); }
+    .mrow-bar { flex: 1; height: 8px; background: rgba(255,255,255,0.06); border-radius: 4px; overflow: hidden; }
+    .mrow-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+    .mrow-val { font-size: 0.82rem; font-weight: 700; color: var(--text); width: 48px; text-align: right; }
+
+    /* SLIDE 5 — Team & Contact */
+    .team-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 36px; }
+    .tcard {
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: 14px; padding: 28px 24px; display: flex; gap: 18px; align-items: flex-start;
+    }
+    .avatar {
+      width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; font-weight: 900; color: #fff;
+    }
+    .tcard h4 { font-size: 1rem; font-weight: 750; margin-bottom: 3px; }
+    .tcard .role { font-size: 0.75rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+    .tcard p { font-size: 0.84rem; color: var(--muted); line-height: 1.6; }
+    .contact-row-s {
+      display: flex; gap: 20px; flex-wrap: wrap; align-items: center;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px 28px;
+    }
+    .contact-item { display: flex; flex-direction: column; gap: 2px; }
+    .contact-item span:first-child { font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .contact-item span:last-child { font-size: 0.92rem; font-weight: 500; color: var(--text); }
+
+    /* FOOTER NAV */
+    .slide-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border);
+    }
+    .slide-num { font-size: 0.75rem; color: var(--muted); font-weight: 600; letter-spacing: 0.08em; }
+    .slide-next { font-size: 0.8rem; color: var(--accent); font-weight: 600; text-decoration: none; }
+    .slide-next:hover { text-decoration: underline; }
+
+    @media (max-width: 680px) {
+      .products, .why-grid, .team-grid { grid-template-columns: 1fr; }
+      .traction-grid { grid-template-columns: 1fr 1fr; }
+      .cover-stats { flex-direction: column; }
+      .ask-box { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="#s1" class="nav-logo">Apex<span>Solutions</span></a>
+  <div class="slide-nav">
+    <div class="dot active" onclick="scrollTo('#s1')"></div>
+    <div class="dot" onclick="scrollTo('#s2')"></div>
+    <div class="dot" onclick="scrollTo('#s3')"></div>
+    <div class="dot" onclick="scrollTo('#s4')"></div>
+    <div class="dot" onclick="scrollTo('#s5')"></div>
+  </div>
+</nav>
+
+<!-- SLIDE 1 — COVER -->
+<section class="slide" id="s1">
+  <div class="glow glow-tl"></div>
+  <div class="glow glow-br"></div>
+  <div class="slide-inner">
+    <div class="slide-label">Apex Solutions · 2026</div>
+    <h1>AI Security Research<br><span class="grad">Platform</span></h1>
+    <p class="lead">
+      Open-source LLM inference infrastructure and AI copilots for enterprise
+      security teams — enabling automated vulnerability analysis, red team
+      assistance, and audit automation without data leaving the environment.
+    </p>
+    <div class="cover-badges">
+      <div class="badge"><span class="badge-dot"></span>2 Live Products</div>
+      <div class="badge green"><span class="badge-dot"></span>Revenue Generating</div>
+      <div class="badge">Bootstrapped · Pre-seed</div>
+      <div class="badge">Founded Jan 2026</div>
+    </div>
+    <div class="cover-stats">
+      <div class="cstat">
+        <div class="cstat-num">2</div>
+        <div class="cstat-label">Products Live</div>
+      </div>
+      <div class="cstat">
+        <div class="cstat-num">$0</div>
+        <div class="cstat-label">External Funding</div>
+      </div>
+      <div class="cstat">
+        <div class="cstat-num">India</div>
+        <div class="cstat-label">HQ</div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="slide-num">01 / 05</span>
+      <a href="#s2" class="slide-next">Products →</a>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 2 — PRODUCTS -->
+<section class="slide" id="s2">
+  <div class="slide-inner">
+    <div class="slide-label">Products</div>
+    <h2>Two Products.<br>One <span class="grad">Security-First</span> Stack.</h2>
+    <div class="products">
+      <div class="pcard">
+        <div class="pcard-icon">👻</div>
+        <h3>GhostMaster</h3>
+        <div class="pcard-status">Live · Iterating</div>
+        <p>
+          An AI security copilot for enterprise red-team audit workflows.
+          Automates vulnerability analysis, generates structured findings,
+          and assists penetration testers using a security-specialized
+          large language model fine-tuned on domain data.
+        </p>
+        <div class="tags">
+          <span class="tag">AI Copilot</span>
+          <span class="tag">Red Team</span>
+          <span class="tag">Audit Automation</span>
+          <span class="tag">Fine-Tuned LLM</span>
+        </div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-icon">⚡</div>
+        <h3>DeepSeek Agent</h3>
+        <div class="pcard-status">Live · Iterating</div>
+        <p>
+          A local LLM terminal agent with a suite of security-focused tools.
+          Runs entirely on local GPU infrastructure via an OpenAI-compatible
+          API — enabling air-gapped research with no data leaving the
+          customer environment.
+        </p>
+        <div class="tags">
+          <span class="tag">Local Inference</span>
+          <span class="tag">Terminal Agent</span>
+          <span class="tag">Air-Gapped</span>
+          <span class="tag">Security Tools</span>
+        </div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="slide-num">02 / 05</span>
+      <a href="#s3" class="slide-next">Why Nebius →</a>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3 — WHY NEBIUS -->
+<section class="slide" id="s3">
+  <div class="glow glow-tl"></div>
+  <div class="slide-inner">
+    <div class="slide-label">The Ask</div>
+    <h2>Why We Need<br><span class="grad">H100 Infrastructure</span></h2>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-icon">🧠</div>
+        <h4>Model Scale</h4>
+        <p>
+          Our security models run at 100B+ parameter scale using quantized GGUF
+          format. Serving these models requires 80GB+ VRAM — only available on
+          H100 or A100-80GB hardware.
+        </p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">🔒</div>
+        <h4>Data Sovereignty</h4>
+        <p>
+          Enterprise security clients cannot send vulnerability data to
+          third-party APIs. We run models on customer-controlled or
+          Nebius-hosted infrastructure with no data exfiltration.
+        </p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">⚡</div>
+        <h4>Inference Throughput</h4>
+        <p>
+          Security audit workflows require real-time LLM responses during
+          active engagements. H100 NVLink enables the throughput needed
+          for interactive red-team assistance.
+        </p>
+      </div>
+      <div class="why-card">
+        <div class="why-icon">💰</div>
+        <h4>Cost to Scale</h4>
+        <p>
+          As a bootstrapped pre-seed startup, we cannot sustain $6–8/hr
+          on-demand GPU costs. Nebius credits unlock the runway to reach
+          product-market fit and first paying enterprise customers.
+        </p>
+      </div>
+    </div>
+    <div class="ask-box">
+      <div>
+        <h3>Credit Request — AI Explorer Tier</h3>
+        <p>H100 GPU compute for model serving, product development, and enterprise pilots</p>
+      </div>
+      <div style="text-align:right;">
+        <div class="ask-amount">$5,000</div>
+        <div class="ask-sub">Nebius AI Credits</div>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="slide-num">03 / 05</span>
+      <a href="#s4" class="slide-next">Market →</a>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4 — MARKET -->
+<section class="slide" id="s4">
+  <div class="glow glow-br"></div>
+  <div class="slide-inner">
+    <div class="slide-label">Market Opportunity</div>
+    <h2>A <span class="grad">$45B Market</span> Under-Served<br>by AI Tooling</h2>
+    <div class="traction-grid">
+      <div class="tstat">
+        <div class="tstat-num grad">$45B</div>
+        <div class="tstat-label">Global Pentesting Market by 2028</div>
+      </div>
+      <div class="tstat">
+        <div class="tstat-num grad">3.5M</div>
+        <div class="tstat-label">Unfilled Security Jobs Worldwide</div>
+      </div>
+      <div class="tstat">
+        <div class="tstat-num grad">72%</div>
+        <div class="tstat-label">of Red Teams Lack Automation Tools</div>
+      </div>
+    </div>
+    <div class="market-bar">
+      <h4>Competitive Positioning</h4>
+      <div class="mrow">
+        <span class="mrow-label">Air-gap</span>
+        <div class="mrow-bar"><div class="mrow-fill" style="width:100%"></div></div>
+        <span class="mrow-val" style="color:var(--green)">✓ Yes</span>
+      </div>
+      <div class="mrow">
+        <span class="mrow-label">Open src</span>
+        <div class="mrow-bar"><div class="mrow-fill" style="width:100%"></div></div>
+        <span class="mrow-val" style="color:var(--green)">✓ Yes</span>
+      </div>
+      <div class="mrow">
+        <span class="mrow-label">Security</span>
+        <div class="mrow-bar"><div class="mrow-fill" style="width:100%"></div></div>
+        <span class="mrow-val" style="color:var(--green)">✓ Focused</span>
+      </div>
+      <div class="mrow">
+        <span class="mrow-label">Cost</span>
+        <div class="mrow-bar"><div class="mrow-fill" style="width:65%"></div></div>
+        <span class="mrow-val">Low</span>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="slide-num">04 / 05</span>
+      <a href="#s5" class="slide-next">Team →</a>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5 — TEAM & CONTACT -->
+<section class="slide" id="s5">
+  <div class="slide-inner">
+    <div class="slide-label">Team</div>
+    <h2>Built by <span class="grad">Security Engineers</span></h2>
+    <div class="team-grid">
+      <div class="tcard">
+        <div class="avatar">S</div>
+        <div>
+          <h4>Soumabha Majumdar</h4>
+          <div class="role">Founder &amp; CEO</div>
+          <p>Security engineer and AI researcher. Builds LLM inference infrastructure and security tooling. Based in Kolkata, India.</p>
+        </div>
+      </div>
+      <div class="tcard" style="background: rgba(79,142,247,0.04); border-color: rgba(79,142,247,0.2);">
+        <div class="avatar" style="background: rgba(79,142,247,0.15); color: var(--accent); font-size:1rem;">+</div>
+        <div>
+          <h4>We're Hiring</h4>
+          <div class="role">Security Researcher · ML Engineer</div>
+          <p>Looking for security researchers and ML engineers passionate about AI-powered offensive tooling.</p>
+        </div>
+      </div>
+    </div>
+    <div class="contact-row-s">
+      <div class="contact-item">
+        <span>Email</span>
+        <span>admin@apexml.xyz</span>
+      </div>
+      <div class="contact-item">
+        <span>Website</span>
+        <span>https://apexml.xyz</span>
+      </div>
+      <div class="contact-item">
+        <span>Location</span>
+        <span>Kolkata, India</span>
+      </div>
+      <div class="contact-item">
+        <span>Founded</span>
+        <span>January 2026</span>
+      </div>
+    </div>
+    <div class="slide-footer">
+      <span class="slide-num">05 / 05</span>
+      <span class="slide-next" style="color:var(--green)">Thank you</span>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Update nav dots on scroll
+  const slides = ['s1','s2','s3','s4','s5'];
+  const dots = document.querySelectorAll('.dot');
+  function updateDots() {
+    let current = 0;
+    slides.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el && window.scrollY >= el.offsetTop - window.innerHeight / 2) current = i;
+    });
+    dots.forEach((d, i) => d.classList.toggle('active', i === current));
+  }
+  window.addEventListener('scroll', updateDots, { passive: true });
+  function scrollTo(id) { document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' }); }
+</script>
+</body>
+</html>
